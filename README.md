@@ -99,7 +99,7 @@ credit-scoring serve --port 8000
 docker compose up --build
 ```
 
-The `train` service fits the model into a shared volume. The `api` service starts once training completes successfully. Open http://localhost:8000/docs.
+The `train` service fits the model into a shared volume. The `api` service starts once training completes successfully. Open http://localhost:8000/docs. If port 8000 is already in use, set `CREDIT_API_PORT=8001` in `.env`.
 
 ### 3. Call the API
 
@@ -173,6 +173,8 @@ Measured on an AMD Ryzen CPU (16 threads), Python 3.13, single process, after `c
 | XGBoost | **2.5 ms** | 2.8 ms | **21,200 rows/s** | 15.9 MB | 6.7 s |
 | Random Forest | 7.5 ms | 7.8 ms | 10,800 rows/s | 104.6 MB | 3.7 s |
 | KNN | 4.4 ms | 4.8 ms | 530 rows/s | 9.6 MB | 0.4 s |
+
+XGBoost's F1 differs slightly between operating systems: 0.684 on Windows and 0.680 in the Linux Docker image, with identical library versions and the same split. The cause is the row and column subsampling (`subsample=0.8`, `colsample_bytree=0.8`), whose random draws are implemented differently by each platform's C++ standard library. With subsampling turned off, both platforms give exactly 0.6837.
 
 Peak Python-heap allocation while scoring a 1,000-row batch is about 0.7 MB for every model (`tracemalloc`). XGBoost is the default served model. Its F1 is within 0.01 of the random forest, it is 3× faster per request and its artifact is 6.6× smaller.
 

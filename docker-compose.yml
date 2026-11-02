@@ -1,6 +1,7 @@
 # One command: `docker compose up --build`
 # 1. `train` fits the configured model and writes it to the shared volume.
 # 2. `api` starts once training succeeded and serves it on http://localhost:8000/docs
+#    (set CREDIT_API_PORT in .env if port 8000 is already taken on the host)
 services:
   train:
     build: .
@@ -18,7 +19,7 @@ services:
       - path: .env
         required: false
     ports:
-      - "8000:8000"
+      - "${CREDIT_API_PORT:-8000}:8000"
     volumes:
       - models:/app/models
     depends_on:
