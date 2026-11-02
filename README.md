@@ -74,7 +74,7 @@ Inside the pipeline, the `ColumnTransformer` handles each feature group differen
 ### 1. Local (Python 3.11+)
 
 ```bash
-git clone <your-repo-url> credit-score-classifier && cd credit-score-classifier
+git clone https://github.com/daniel880830/credit-score-classifier.git && cd credit-score-classifier
 python -m venv .venv
 source .venv/bin/activate          # Windows: .venv\Scripts\activate
 pip install -e ".[dev]"
