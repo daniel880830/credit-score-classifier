@@ -1,0 +1,4 @@
+# Normalise line endings so the repo works on Linux/Docker as well as Windows.
+* text=auto eol=lf
+*.png binary
+*.joblib binary

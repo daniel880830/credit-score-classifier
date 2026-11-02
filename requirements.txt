@@ -1,0 +1,12 @@
+# Runtime dependencies (mirrors [project.dependencies] in pyproject.toml).
+# Versions tested: pandas 2.3.3, numpy 2.5.4, scikit-learn 1.7.2, xgboost 3.4.1, fastapi 0.162.0
+pandas>=2.2,<3
+numpy>=1.26,<3
+scikit-learn>=1.5,<1.8
+xgboost>=2.1,<4
+joblib>=1.4
+pydantic>=2.7,<3
+pydantic-settings>=2.3
+fastapi>=0.115
+uvicorn[standard]>=0.30
+matplotlib>=3.8

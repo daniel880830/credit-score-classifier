@@ -1,0 +1,26 @@
+# Environment
+.env
+.venv/
+venv/
+
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+build/
+dist/
+.pytest_cache/
+.ruff_cache/
+.coverage
+htmlcov/
+
+# Artifacts (regenerate with `credit-scoring train`)
+models/*.joblib
+
+# Notebooks / OS
+.ipynb_checkpoints/
+.DS_Store
+Thumbs.db
+
+# IDE (shared run configurations live in .run/)
+.idea/
