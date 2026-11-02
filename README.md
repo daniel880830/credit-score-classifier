@@ -21,7 +21,7 @@ This started as an exploratory notebook that reached ~0.80 F1. Turning it into a
 - **Same preprocessing in training and serving.** All cleaning-independent preprocessing lives inside one scikit-learn `Pipeline` that is saved as a single artifact. A custom `MultiHotEncoder` learns the loan-type vocabulary during `fit`. The notebook used `pd.get_dummies`, which produces different columns for a single-row request than for the training data, so it could not serve one request at a time.
 - **FastAPI inference service.** It has Pydantic v2 request validation (ranges, enums, unknown fields rejected), single and batch endpoints, a batch-size limit (413), returns 503 when no model is loaded, and offers OpenAPI docs at `/docs`.
 - **Faster serving.** Models train with all cores, then switch to single-threaded prediction before they are saved. That cut p50 latency for one request from 28.8 ms to 7.5 ms for the random forest (3.8×) with identical predictions.
-- **Production layout.** The code is a `src/` package with typed functions and docstrings. Settings come from `.env` / environment variables (no hardcoded paths), and hyperparameters from a TOML file. A multi-stage Docker image runs as a non-root user, and `docker compose up` trains the model and then serves it. The 110 pytest tests cover 99% of the code.
+- **Production layout.** The code is a `src/` package with typed functions and docstrings. Settings come from `.env` / environment variables (no hardcoded paths), and hyperparameters from a TOML file. A multi-stage Docker image runs as a non-root user and is 753 MB, down from 1.71 GB, after switching to the CPU-only XGBoost wheel and stripping bundled test suites. `docker compose up` trains the model and then serves it. The 110 pytest tests cover 99% of the code.
 
 ## System Architecture
 
@@ -67,7 +67,7 @@ Inside the pipeline, the `ColumnTransformer` handles each feature group differen
 | ML | scikit-learn · XGBoost · pandas · NumPy |
 | Serving | FastAPI · Uvicorn · Pydantic v2 · pydantic-settings |
 | Quality | pytest · pytest-cov · Ruff (lint and format) |
-| Ops | Docker (multi-stage, non-root) · Docker Compose · joblib artifacts |
+| Ops | Docker (multi-stage, non-root, 753 MB) · Docker Compose · joblib artifacts |
 
 ## Quick Start
 

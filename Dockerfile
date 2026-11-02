@@ -14,15 +14,13 @@ RUN pip install -r requirements.txt
 
 COPY pyproject.toml README.md ./
 COPY src ./src
-RUN pip install --no-deps .
+RUN pip install --no-deps . \
+    # Trim what the runtime never needs: bundled test suites and pip itself.
+    && find /opt/venv -depth -type d -name tests -exec rm -rf {} + \
+    && pip uninstall -y pip
 
-# ---- Runtime: slim image, non-root user ----
+# ---- Runtime: slim image, non-root user, no extra system packages ----
 FROM python:3.12-slim AS runtime
-
-# libgomp1 is required by XGBoost's OpenMP runtime.
-RUN apt-get update \
-    && apt-get install -y --no-install-recommends libgomp1 curl \
-    && rm -rf /var/lib/apt/lists/*
 
 ENV PATH="/opt/venv/bin:$PATH" \
     PYTHONDONTWRITEBYTECODE=1 \
@@ -42,7 +40,9 @@ RUN mkdir -p models reports && chown appuser:appuser models reports
 USER appuser
 
 EXPOSE 8000
+# Uses Python's stdlib instead of installing curl into the image.
 HEALTHCHECK --interval=30s --timeout=5s --start-period=20s \
-    CMD curl -fsS http://localhost:8000/health || exit 1
+    CMD ["python", "-c", "import urllib.request; urllib.request.urlopen('http://localhost:8000/health', timeout=4)"]
 
-CMD ["uvicorn", "credit_scoring.api:app", "--host", "0.0.0.0", "--port", "8000"]
+# The CLI configures logging, so model-loading messages appear in `docker logs`.
+CMD ["credit-scoring", "serve", "--host", "0.0.0.0", "--port", "8000"]

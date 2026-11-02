@@ -13,7 +13,9 @@ dependencies = [
     "pandas>=2.2,<3",
     "numpy>=1.26,<3",
     "scikit-learn>=1.5,<1.8",
-    "xgboost>=2.1,<4",
+    # On Linux the CPU-only wheel avoids ~350 MB of NVIDIA GPU libraries.
+    "xgboost-cpu>=2.1,<4; sys_platform == 'linux'",
+    "xgboost>=2.1,<4; sys_platform != 'linux'",
     "joblib>=1.4",
     "pydantic>=2.7,<3",
     "pydantic-settings>=2.3",

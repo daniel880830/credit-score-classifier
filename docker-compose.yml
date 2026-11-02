@@ -2,9 +2,11 @@
 # 1. `train` fits the configured model and writes it to the shared volume.
 # 2. `api` starts once training succeeded and serves it on http://localhost:8000/docs
 #    (set CREDIT_API_PORT in .env if port 8000 is already taken on the host)
+# Both services run the same image, which is built once by `train`.
 services:
   train:
     build: .
+    image: credit-score-classifier:latest
     command: ["credit-scoring", "train"]
     env_file:
       - path: .env
@@ -14,7 +16,8 @@ services:
       - ./reports:/app/reports
 
   api:
-    build: .
+    image: credit-score-classifier:latest
+    pull_policy: never
     env_file:
       - path: .env
         required: false
